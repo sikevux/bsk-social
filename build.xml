@@ -4,7 +4,7 @@
 
   <target name="build-jenkins" depends="build-ci" />
   <target name="build-ci" depends="clean,phpmd,phpcpd,pdepend,phpunit" />
-  <target name="build" depends="build-hudson" />
+  <target name="build" depends="build-jenkins" />
 
   <target name="list">
     <echo>
