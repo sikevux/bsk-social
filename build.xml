@@ -3,7 +3,7 @@
   <property name="logs" value="${basedir}/build/logs" />
 
   <target name="build-jenkins" depends="build-ci" />
-  <target name="build-ci" depends="clean,phpmd,phpcpd,pdepend,phpunit" />
+  <target name="build-ci" depends="clean,phpmd,phpunit" />
   <target name="build" depends="build-jenkins" />
 
   <target name="list">
@@ -12,16 +12,13 @@ These are the available targets:
  list
  clean
  phpmd
- phpcpd
- pdepend
  phpunit
-
  build (Runs all of the above)
- test  (Runs phpcpd,pdepend,phpunit)
+ test  (Runs phpunit)
     </echo>
   </target>
 
-  <target name="test" depends="phpcpd,phpunit" />
+  <target name="test" depends="phpunit" />
 
   <target name="clean">
     <delete includeEmptyDirs="true" dir="${basedir}/build" />
@@ -56,7 +53,7 @@ These are the available targets:
 
   <target name="phpmd" depends="prepare" >
     <exec executable="phpmd" dir="${basedir}">
-      <arg line="./src xml codesize,unusedcode,naming --reportfile ${logs}/cpd-phpmd.xml"/>
+      <arg line=". xml codesize,unusedcode,naming --reportfile ${logs}/cpd-phpmd.xml"/>
     </exec>
   </target>
 
