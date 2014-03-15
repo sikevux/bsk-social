@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Social" default="list" basedir=".">
+  <property name="logs" value="${basedir}/build/logs" />
+
+  <target name="build-jenkins" depends="build-ci" />
+  <target name="build-ci" depends="clean,phpmd,phpunit" />
+  <target name="build" depends="build-jenkins" />
+
+  <target name="list">
+    <echo>
+These are the available targets:
+ list
+ clean
+ phpmd
+ phpunit
+ build (Runs all of the above)
+ test  (Runs phpunit)
+    </echo>
+  </target>
+
+  <target name="test" depends="phpunit" />
+
+  <target name="clean">
+    <delete includeEmptyDirs="true" dir="${basedir}/build" />
+  </target>
+
+  <target name="prepare">
+    <mkdir dir="${basedir}/build/antlog" />
+    <mkdir dir="${basedir}/build/api" />
+    <mkdir dir="${basedir}/build/coverage" />
+    <mkdir dir="${basedir}/build/logs" />
+    <mkdir dir="${basedir}/build/graph" />
+  </target>
+
+  <target name="pull">
+    <exec executable="git" dir="${basedir}/">
+      <arg line="pull" />
+    </exec>
+  </target>
+
+	<target name="phpcs" depends="prepare" >
+    <property name="report" value="summary" />
+    <exec executable="phpcs" dir="${basedir}">
+      <arg line="--tab-width=4 --report=${report} -s --standard=misc/MothershipStandard src/"/>
+    </exec>
+  </target>
+
+  <target name="phpcs-checkstyle" depends="prepare" >
+    <exec executable="phpcs" dir="${basedir}" output="${logs}/checkstyle.xml">
+      <arg line="--report=checkstyle --standard=misc/MothershipStandard src/"/>
+    </exec>
+  </target>
+
+  <target name="phpmd" depends="prepare" >
+    <exec executable="phpmd" dir="${basedir}">
+      <arg line=". xml codesize,unusedcode,naming --reportfile ${logs}/cpd-phpmd.xml"/>
+    </exec>
+  </target>
+
+  <target name="pdepend" depends="prepare" >
+    <exec executable="pdepend" dir="${basedir}" logerror="on">
+      <arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml
+       --jdepend-chart=${basedir}/build/graph/10-dependencies.svg
+       --overview-pyramid=${basedir}/build/graph/11-software-metrics-pyramid.svg . " />
+    </exec>
+  </target>
+
+  <target name="phpcpd" >
+    <exec executable="phpcpd" failonerror="false">
+      <arg line="--log-pmd ${basedir}/build/logs/cpd-phpcpd.xml ${basedir}" />
+    </exec>
+  </target>
+
+  <target name="phpunit" depends="prepare" >
+    <exec executable="phpunit" dir="${basedir}" failonerror="on">
+      <arg line="--log-junit ${basedir}/build/logs/junit.xml
+		--coverage-clover ${basedir}/build/logs/clover.xml
+		--coverage-html ${basedir}/build/coverage
+		${basedir}/tests/" />
+    </exec>
+  </target>
+
+</project>
